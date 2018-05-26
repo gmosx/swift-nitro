@@ -4,9 +4,9 @@ public final class Router: HTTPHandler {
     public var routes: [String: HTTPHandler] = [:]
 
     public override func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-        let reqPart = unwrapInboundIn(data)
+        let requestPart = unwrapInboundIn(data)
 
-        switch reqPart {
+        switch requestPart {
         case .head(let header):
             for (path, handler) in routes {
 //                if header.uri.hasPrefix(path) {
