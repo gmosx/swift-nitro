@@ -21,6 +21,12 @@ open class HTTPHandler: ChannelInboundHandler {
         _ = context.channel.write(part)
     }
 
+    public func writeAndClose(part: HTTPServerResponsePart) {
+        _ = context.channel.writeAndFlush(part).then {
+            self.context.channel.close()
+        }
+    }
+
     public func writeHead(version: HTTPVersion? = nil, status: HTTPResponseStatus = .ok, headers: HTTPHeaders? = nil) {
         let head: HTTPResponseHead
 
@@ -40,16 +46,15 @@ open class HTTPHandler: ChannelInboundHandler {
         write(part: HTTPServerResponsePart.head(head))
     }
 
-    public func writeAndClose(part: HTTPServerResponsePart) {
-        _ = context.channel.writeAndFlush(part).then {
-            self.context.channel.close()
-        }
-    }
-
-    public func write(body text: String) {
+    public func writeBody(_ text: String) {
         var buffer = context.channel.allocator.buffer(capacity: text.utf8.count)
         buffer.write(string: text)
         write(part: HTTPServerResponsePart.body(.byteBuffer(buffer)))
+    }
+
+    public func close() {
+        let endpart = HTTPServerResponsePart.end(nil)
+        writeAndClose(part: endpart)
     }
 
     open func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {

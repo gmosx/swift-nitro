@@ -6,11 +6,8 @@ class HomeHandler: HTTPHandler {
         headers.replaceOrAdd(name: "Content-Type", value: "text/html")
 
         writeHead(status: .ok, headers: headers)
-
-        write(body: "Welcome home! <a href=\"/hello\">Hello</a>")
-
-        let endpart = HTTPServerResponsePart.end(nil)
-        writeAndClose(part: endpart)
+        writeBody("Welcome home! <a href=\"/hello\">Hello</a>")
+        close()
     }
 }
 
@@ -19,12 +16,9 @@ class HelloHandler: HTTPHandler {
         var headers = HTTPHeaders()
         headers.replaceOrAdd(name: "Content-Type", value: "text/html")
 
-        writeHead(status: .ok, headers: headers)
-
-        write(body: "Hello World! YEAH! <a href=\"/\">Home</a>")
-
-        let endpart = HTTPServerResponsePart.end(nil)
-        writeAndClose(part: endpart)
+        writeHead(headers: headers)
+        writeBody("Hello World! YEAH! <a href=\"/\">Home</a>")
+        close()
     }
 }
 
