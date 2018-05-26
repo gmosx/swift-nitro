@@ -17,6 +17,7 @@ public final class Router: HTTPHandler {
 //                if header.uri.hasPrefix(path) {
                 if header.uri == path {
                     handler.channelRead(ctx: ctx, data: data)
+                    break
                 }
             }
 
