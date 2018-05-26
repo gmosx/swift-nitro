@@ -21,12 +21,7 @@ open class HTTPHandler: ChannelInboundHandler {
 //            let headpart = HTTPServerResponsePart.head(head)
 //            _ = ctx.channel.write(headpart)
 //
-//            let text: String
-//            if header.uri.hasPrefix("/hello") {
-//                text = "Hello World! YEAH! <a href=\"/\">Home</a>"
-//            } else {
-//                text = "Go away! <a href=\"/hello\">Hello</a>"
-//            }
+//            let text = "Hello"
 //
 //            var buffer = ctx.channel.allocator.buffer(capacity: text.utf8.count)
 //            buffer.write(string: text)
