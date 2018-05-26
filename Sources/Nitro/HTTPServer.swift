@@ -5,52 +5,11 @@ import NIOHTTP1
 // TODO: need other name
 
 open class HTTPServer {
-    final class HTTPHandler: ChannelInboundHandler {
-        typealias InboundIn = HTTPServerRequestPart
-
-        func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-            let reqPart = unwrapInboundIn(data)
-
-            switch reqPart {
-            case .head(let header):
-                print("req:", header)
-
-                var headers = HTTPHeaders()
-                headers.replaceOrAdd(name: "Content-Type", value: "text/html")
-                let head = HTTPResponseHead(
-                    version: header.version,
-                    status: .ok,
-                    headers: headers
-                )
-                let headpart = HTTPServerResponsePart.head(head)
-                _ = ctx.channel.write(headpart)
-
-                let text: String
-                if header.uri.hasPrefix("/hello") {
-                    text = "Hello World! YEAH! <a href=\"/\">Home</a>"
-                } else {
-                    text = "Go away! <a href=\"/hello\">Hello</a>"
-                }
-
-                var buffer = ctx.channel.allocator.buffer(capacity: text.utf8.count)
-                buffer.write(string: text)
-                let bodypart = HTTPServerResponsePart.body(.byteBuffer(buffer))
-                _ = ctx.channel.write(bodypart)
-
-                let endpart = HTTPServerResponsePart.end(nil)
-                _ = ctx.channel.writeAndFlush(endpart).then {
-                  ctx.channel.close()
-                }
-
-            case .body, .end:
-                break
-            }
-        }
-    }
-
     let loopGroup = MultiThreadedEventLoopGroup(numThreads: System.coreCount)
+    let handler: HTTPHandler
 
-    public init() {
+    public init(handler: HTTPHandler) {
+        self.handler = handler
     }
 
     open func bind(host: String, port: Int) {
@@ -60,7 +19,7 @@ open class HTTPServer {
             .serverChannelOption(reuseAddrOption, value: 1)
             .childChannelInitializer { channel in
                 channel.pipeline.configureHTTPServerPipeline(withErrorHandling: true).then {
-                    channel.pipeline.add(handler: HTTPHandler())
+                    channel.pipeline.add(handler: self.handler)
                 }
             }
             .childChannelOption(ChannelOptions.socket(IPPROTO_TCP, TCP_NODELAY), value: 1)
