@@ -14,7 +14,13 @@ open class HTTPHandler: ChannelInboundHandler {
     public init() {
     }
 
-    open func didReceive(requestHead: HTTPRequestHead) {
+    open func didReceiveHead(requestHead: HTTPRequestHead) {
+    }
+
+    open func didReceiveBody(requestBody: ByteBuffer) {
+    }
+
+    open func didReceiveEnd(requestEndHeaders: HTTPHeaders?) {
     }
 
     public func write(part: HTTPServerResponsePart) {
@@ -65,10 +71,13 @@ open class HTTPHandler: ChannelInboundHandler {
         switch requestPart {
         case .head(let requestHead):
             self.requestHead = requestHead
-            didReceive(requestHead: requestHead)
+            didReceiveHead(requestHead: requestHead)
 
-        case .body, .end:
-            break
+        case .body(let requestBody):
+            didReceiveBody(requestBody: requestBody)
+
+        case .end(let requestEndHeaders):
+            didReceiveEnd(requestEndHeaders: requestEndHeaders)
         }
     }
 }
