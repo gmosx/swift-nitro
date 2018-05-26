@@ -9,6 +9,7 @@
 open class HTTPHandler: ChannelInboundHandler {
     public typealias InboundIn = HTTPServerRequestPart
     public var context: ChannelHandlerContext!
+    public var requestHead: HTTPRequestHead!
 
     public init() {
     }
@@ -20,10 +21,35 @@ open class HTTPHandler: ChannelInboundHandler {
         _ = context.channel.write(part)
     }
 
+    public func writeHead(version: HTTPVersion? = nil, status: HTTPResponseStatus = .ok, headers: HTTPHeaders? = nil) {
+        let head: HTTPResponseHead
+
+        if let headers = headers {
+            head = HTTPResponseHead(
+                version: version ?? requestHead.version,
+                status: status,
+                headers: headers
+            )
+        } else {
+            head = HTTPResponseHead(
+                version: version ?? requestHead.version,
+                status: status
+            )
+        }
+
+        write(part: HTTPServerResponsePart.head(head))
+    }
+
     public func writeAndClose(part: HTTPServerResponsePart) {
         _ = context.channel.writeAndFlush(part).then {
             self.context.channel.close()
         }
+    }
+
+    public func write(body text: String) {
+        var buffer = context.channel.allocator.buffer(capacity: text.utf8.count)
+        buffer.write(string: text)
+        write(part: HTTPServerResponsePart.body(.byteBuffer(buffer)))
     }
 
     open func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
@@ -33,30 +59,8 @@ open class HTTPHandler: ChannelInboundHandler {
 
         switch requestPart {
         case .head(let requestHead):
+            self.requestHead = requestHead
             didReceive(requestHead: requestHead)
-//            print("req:", header)
-//
-//            var headers = HTTPHeaders()
-//            headers.replaceOrAdd(name: "Content-Type", value: "text/html")
-//            let head = HTTPResponseHead(
-//                version: header.version,
-//                status: .ok,
-//                headers: headers
-//            )
-//            let headpart = HTTPServerResponsePart.head(head)
-//            _ = ctx.channel.write(headpart)
-//
-//            let text = "Hello"
-//
-//            var buffer = ctx.channel.allocator.buffer(capacity: text.utf8.count)
-//            buffer.write(string: text)
-//            let bodypart = HTTPServerResponsePart.body(.byteBuffer(buffer))
-//            _ = ctx.channel.write(bodypart)
-//
-//            let endpart = HTTPServerResponsePart.end(nil)
-//            _ = ctx.channel.writeAndFlush(endpart).then {
-//                ctx.channel.close()
-//            }
 
         case .body, .end:
             break

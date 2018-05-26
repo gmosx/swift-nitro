@@ -4,20 +4,10 @@ class HomeHandler: HTTPHandler {
     override func didReceive(requestHead: HTTPRequestHead) {
         var headers = HTTPHeaders()
         headers.replaceOrAdd(name: "Content-Type", value: "text/html")
-        let head = HTTPResponseHead(
-            version: requestHead.version,
-            status: .ok,
-            headers: headers
-        )
-        let headpart = HTTPServerResponsePart.head(head)
-        write(part: headpart)
 
-        let text = "Welcome home! <a href=\"/hello\">Hello</a>"
+        writeHead(status: .ok, headers: headers)
 
-        var buffer = context.channel.allocator.buffer(capacity: text.utf8.count)
-        buffer.write(string: text)
-        let bodypart = HTTPServerResponsePart.body(.byteBuffer(buffer))
-        write(part: bodypart)
+        write(body: "Welcome home! <a href=\"/hello\">Hello</a>")
 
         let endpart = HTTPServerResponsePart.end(nil)
         writeAndClose(part: endpart)
@@ -28,20 +18,10 @@ class HelloHandler: HTTPHandler {
     override func didReceive(requestHead: HTTPRequestHead) {
         var headers = HTTPHeaders()
         headers.replaceOrAdd(name: "Content-Type", value: "text/html")
-        let head = HTTPResponseHead(
-            version: requestHead.version,
-            status: .ok,
-            headers: headers
-        )
-        let headpart = HTTPServerResponsePart.head(head)
-        write(part: headpart)
 
-        let text = "Hello World! YEAH! <a href=\"/\">Home</a>"
+        writeHead(status: .ok, headers: headers)
 
-        var buffer = context.channel.allocator.buffer(capacity: text.utf8.count)
-        buffer.write(string: text)
-        let bodypart = HTTPServerResponsePart.body(.byteBuffer(buffer))
-        write(part: bodypart)
+        write(body: "Hello World! YEAH! <a href=\"/\">Home</a>")
 
         let endpart = HTTPServerResponsePart.end(nil)
         writeAndClose(part: endpart)
