@@ -1,13 +1,8 @@
 import NIO
 
 public final class Router: HTTPHandler {
-    typealias InboundIn = HTTPServerRequestPart
-
     public var routes: [String: HTTPHandler] = [:]
 
-    public override init() {
-    }
-    
     public override func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let reqPart = unwrapInboundIn(data)
 
