@@ -1,10 +1,5 @@
-// requestDidReceiveHead
-// requestDidReceiveBody
-// requestDidEnd
-// writeHead
-// writeBody
-// writeEnd
-// flush
+import NIO
+import NIOHTTP1
 
 open class HTTPHandler: ChannelInboundHandler {
     public typealias InboundIn = HTTPServerRequestPart

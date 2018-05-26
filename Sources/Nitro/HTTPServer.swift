@@ -2,8 +2,6 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-// TODO: need other name
-
 open class HTTPServer {
     let loopGroup = MultiThreadedEventLoopGroup(numThreads: System.coreCount)
     let handler: HTTPHandler
@@ -14,6 +12,7 @@ open class HTTPServer {
 
     open func bind(host: String, port: Int) {
         let reuseAddrOption = ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR)
+
         let bootstrap = ServerBootstrap(group: loopGroup)
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(reuseAddrOption, value: 1)
