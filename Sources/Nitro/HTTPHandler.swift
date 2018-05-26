@@ -8,19 +8,32 @@
 
 open class HTTPHandler: ChannelInboundHandler {
     public typealias InboundIn = HTTPServerRequestPart
+    public var context: ChannelHandlerContext!
 
     public init() {
     }
 
-    open func didReceive(requestHead: HTTPRequestHead, ctx: ChannelHandlerContext) {
+    open func didReceive(requestHead: HTTPRequestHead) {
     }
-    
+
+    public func write(part: HTTPServerResponsePart) {
+        _ = context.channel.write(part)
+    }
+
+    public func writeAndClose(part: HTTPServerResponsePart) {
+        _ = context.channel.writeAndFlush(part).then {
+            self.context.channel.close()
+        }
+    }
+
     open func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
+        context = ctx
+
         let requestPart = unwrapInboundIn(data)
 
         switch requestPart {
         case .head(let requestHead):
-            didReceive(requestHead: requestHead, ctx: ctx)
+            didReceive(requestHead: requestHead)
 //            print("req:", header)
 //
 //            var headers = HTTPHeaders()

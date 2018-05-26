@@ -1,7 +1,7 @@
 import Nitro
 
 class HomeHandler: HTTPHandler {
-    override func didReceive(requestHead: HTTPRequestHead, ctx: ChannelHandlerContext) {
+    override func didReceive(requestHead: HTTPRequestHead) {
         var headers = HTTPHeaders()
         headers.replaceOrAdd(name: "Content-Type", value: "text/html")
         let head = HTTPResponseHead(
@@ -10,24 +10,22 @@ class HomeHandler: HTTPHandler {
             headers: headers
         )
         let headpart = HTTPServerResponsePart.head(head)
-        _ = ctx.channel.write(headpart)
+        write(part: headpart)
 
         let text = "Welcome home! <a href=\"/hello\">Hello</a>"
 
-        var buffer = ctx.channel.allocator.buffer(capacity: text.utf8.count)
+        var buffer = context.channel.allocator.buffer(capacity: text.utf8.count)
         buffer.write(string: text)
         let bodypart = HTTPServerResponsePart.body(.byteBuffer(buffer))
-        _ = ctx.channel.write(bodypart)
+        write(part: bodypart)
 
         let endpart = HTTPServerResponsePart.end(nil)
-        _ = ctx.channel.writeAndFlush(endpart).then {
-            ctx.channel.close()
-        }
+        writeAndClose(part: endpart)
     }
 }
 
 class HelloHandler: HTTPHandler {
-    override func didReceive(requestHead: HTTPRequestHead, ctx: ChannelHandlerContext) {
+    override func didReceive(requestHead: HTTPRequestHead) {
         var headers = HTTPHeaders()
         headers.replaceOrAdd(name: "Content-Type", value: "text/html")
         let head = HTTPResponseHead(
@@ -36,19 +34,17 @@ class HelloHandler: HTTPHandler {
             headers: headers
         )
         let headpart = HTTPServerResponsePart.head(head)
-        _ = ctx.channel.write(headpart)
+        write(part: headpart)
 
         let text = "Hello World! YEAH! <a href=\"/\">Home</a>"
 
-        var buffer = ctx.channel.allocator.buffer(capacity: text.utf8.count)
+        var buffer = context.channel.allocator.buffer(capacity: text.utf8.count)
         buffer.write(string: text)
         let bodypart = HTTPServerResponsePart.body(.byteBuffer(buffer))
-        _ = ctx.channel.write(bodypart)
+        write(part: bodypart)
 
         let endpart = HTTPServerResponsePart.end(nil)
-        _ = ctx.channel.writeAndFlush(endpart).then {
-            ctx.channel.close()
-        }
+        writeAndClose(part: endpart)
     }
 }
 
