@@ -1,14 +1,26 @@
+// requestDidReceiveHead
+// requestDidReceiveBody
+// requestDidEnd
+// writeHead
+// writeBody
+// writeEnd
+// flush
+
 open class HTTPHandler: ChannelInboundHandler {
     public typealias InboundIn = HTTPServerRequestPart
 
     public init() {
     }
+
+    open func didReceive(requestHead: HTTPRequestHead, ctx: ChannelHandlerContext) {
+    }
     
     open func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-//        let reqPart = unwrapInboundIn(data)
-//
-//        switch reqPart {
-//        case .head(let header):
+        let requestPart = unwrapInboundIn(data)
+
+        switch requestPart {
+        case .head(let requestHead):
+            didReceive(requestHead: requestHead, ctx: ctx)
 //            print("req:", header)
 //
 //            var headers = HTTPHeaders()
@@ -32,9 +44,9 @@ open class HTTPHandler: ChannelInboundHandler {
 //            _ = ctx.channel.writeAndFlush(endpart).then {
 //                ctx.channel.close()
 //            }
-//
-//        case .body, .end:
-//            break
-//        }
+
+        case .body, .end:
+            break
+        }
     }
 }
