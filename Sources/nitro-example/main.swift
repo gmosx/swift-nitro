@@ -2,23 +2,17 @@ import Nitro
 
 class HomeHandler: HTTPHandler {
     override func didReceiveHead(requestHead: HTTPRequestHead) {
-        var responseHeaders = HTTPHeaders()
-        responseHeaders.add(name: "Content-Type", value: "text/html")
-
-        writeHead(status: .ok, headers: responseHeaders)
+        writeHead(status: .ok, contentType: "text/html")
         writeBody("Welcome home! <a href=\"/hello\">Hello</a>")
-        close()
+        writeEndAndClose()
     }
 }
 
 class HelloHandler: HTTPHandler {
     override func didReceiveHead(requestHead: HTTPRequestHead) {
-        var responseHeaders = HTTPHeaders()
-        responseHeaders.replaceOrAdd(name: "Content-Type", value: "text/html")
-
-        writeHead(headers: responseHeaders)
+        writeHead(status: .ok, contentType: "text/html")
         writeBody("Hello World! YEAH! <a href=\"/\">Home</a>")
-        close()
+        writeEndAndClose()
     }
 }
 

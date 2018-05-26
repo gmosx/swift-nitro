@@ -28,19 +28,26 @@ open class HTTPHandler: ChannelInboundHandler {
         }
     }
 
-    public func writeHead(version: HTTPVersion? = nil, status: HTTPResponseStatus = .ok, headers: HTTPHeaders? = nil) {
+    public func writeHead(version: HTTPVersion? = nil, status: HTTPResponseStatus = .ok, contentType: String = "text/html", headers: HTTPHeaders? = nil) {
         let head: HTTPResponseHead
 
-        if let headers = headers {
+        if var headers = headers {
+            if !headers.contains(name: "Content-Type") {
+                headers.add(name: "Content-Type", value: contentType)
+            }
+
             head = HTTPResponseHead(
                 version: version ?? requestHead.version,
                 status: status,
                 headers: headers
             )
         } else {
+            var headers = HTTPHeaders()
+            headers.add(name: "Content-Type", value: contentType)
             head = HTTPResponseHead(
                 version: version ?? requestHead.version,
-                status: status
+                status: status,
+                headers: headers
             )
         }
 
@@ -53,7 +60,7 @@ open class HTTPHandler: ChannelInboundHandler {
         write(part: HTTPServerResponsePart.body(.byteBuffer(buffer)))
     }
 
-    public func close() {
+    public func writeEndAndClose() {
         let endpart = HTTPServerResponsePart.end(nil)
         writeAndClose(part: endpart)
     }
