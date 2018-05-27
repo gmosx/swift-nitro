@@ -3,7 +3,6 @@ import NIO
 import NIOHTTP1
 
 open class HTTPServer {
-    let loopGroup = MultiThreadedEventLoopGroup(numThreads: System.coreCount)
     let handler: HTTPHandler
 
     public init(handler: HTTPHandler) {
@@ -11,6 +10,18 @@ open class HTTPServer {
     }
 
     open func bind(host: String, port: Int) {
+        let loopGroup = MultiThreadedEventLoopGroup(numThreads: System.coreCount)
+
+//        let threadPool = BlockingIOThreadPool(numberOfThreads: 6)
+//        threadPool.start()
+//
+//        let fileIO = NonBlockingFileIO(threadPool: threadPool)
+
+        defer {
+            try! loopGroup.syncShutdownGracefully()
+//            try! threadPool.syncShutdownGracefully()
+        }
+
         let reuseAddrOption = ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR)
 
         let bootstrap = ServerBootstrap(group: loopGroup)
@@ -18,7 +29,7 @@ open class HTTPServer {
             .serverChannelOption(reuseAddrOption, value: 1)
             .childChannelInitializer { channel in
                 channel.pipeline.configureHTTPServerPipeline(withErrorHandling: true).then {
-                    channel.pipeline.add(handler: self.handler)
+                    return channel.pipeline.add(handler: self.handler)
                 }
             }
             .childChannelOption(ChannelOptions.socket(IPPROTO_TCP, TCP_NODELAY), value: 1)

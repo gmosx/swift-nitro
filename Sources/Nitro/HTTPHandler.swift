@@ -1,9 +1,13 @@
 import NIO
 import NIOHTTP1
 
+// TODO: correctly handle keepalive
+
 open class HTTPHandler: ChannelInboundHandler {
     public typealias InboundIn = HTTPServerRequestPart
-    public var context: ChannelHandlerContext!
+    public typealias OutboundOut = HTTPServerResponsePart
+    
+    public var ctx: ChannelHandlerContext!
     public var requestHead: HTTPRequestHead!
 
     public init() {
@@ -15,16 +19,16 @@ open class HTTPHandler: ChannelInboundHandler {
     open func didReceiveBody(requestBody: ByteBuffer) {
     }
 
-    open func didReceiveEnd(requestEndHeaders: HTTPHeaders?) {
+    open func didReceiveEnd(requestTrailers: HTTPHeaders?) {
     }
 
     public func write(part: HTTPServerResponsePart) {
-        _ = context.channel.write(part)
+        _ = ctx.channel.write(part)
     }
 
     public func writeAndClose(part: HTTPServerResponsePart) {
-        _ = context.channel.writeAndFlush(part).then {
-            self.context.channel.close()
+        _ = ctx.channel.writeAndFlush(part).then {
+            self.ctx.channel.close()
         }
     }
 
@@ -55,18 +59,22 @@ open class HTTPHandler: ChannelInboundHandler {
     }
 
     public func writeBody(_ text: String) {
-        var buffer = context.channel.allocator.buffer(capacity: text.utf8.count)
+        var buffer = ctx.channel.allocator.buffer(capacity: text.utf8.count)
         buffer.write(string: text)
         write(part: HTTPServerResponsePart.body(.byteBuffer(buffer)))
     }
 
-    public func writeEndAndClose() {
-        let endpart = HTTPServerResponsePart.end(nil)
+    public func flush() {
+        ctx.channel.flush()
+    }
+
+    public func writeEndAndClose(trailers: HTTPHeaders? = nil) {
+        let endpart = HTTPServerResponsePart.end(trailers)
         writeAndClose(part: endpart)
     }
 
     open func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-        context = ctx
+        self.ctx = ctx
 
         let requestPart = unwrapInboundIn(data)
 
@@ -78,8 +86,8 @@ open class HTTPHandler: ChannelInboundHandler {
         case .body(let requestBody):
             didReceiveBody(requestBody: requestBody)
 
-        case .end(let requestEndHeaders):
-            didReceiveEnd(requestEndHeaders: requestEndHeaders)
+        case .end(let requestTrailers):
+            didReceiveEnd(requestTrailers: requestTrailers)
         }
     }
 }
