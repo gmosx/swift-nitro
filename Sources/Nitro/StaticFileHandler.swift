@@ -26,7 +26,7 @@ public class StaticFileHandler: HTTPHandler {
     public override func didReceiveHead(requestHead: HTTPRequestHead) {
         guard requestHead.uri.range(of: "..") == nil else {
             self.writeHead(status: .forbidden)
-            self.writeEndAndClose()
+            self.writeEnd()
             return
         }
 
@@ -54,7 +54,7 @@ public class StaticFileHandler: HTTPHandler {
             }
 
             self.writeBody(body)
-            self.writeEndAndClose()
+            self.writeEnd()
         }
 
         fileHandleAndRegion.whenSuccess { (file, region) in
@@ -68,7 +68,7 @@ public class StaticFileHandler: HTTPHandler {
 
             self.writeHead(status: .ok, headers: responseHeaders)
             self.writeBody(region)
-            self.writeEndAndClose()
+            self.writeEnd()
         }
     }
 }

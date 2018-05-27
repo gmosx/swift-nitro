@@ -85,13 +85,18 @@ open class HTTPHandler: ChannelInboundHandler {
         return write(part: .body(.fileRegion(region)))
     }
 
-    public func flush() {
-        ctx.channel.flush()
+    public func writeEnd(trailers: HTTPHeaders? = nil) {
+        let endpart = HTTPServerResponsePart.end(trailers)
+
+        if requestHead.isKeepAlive {
+            writeAndFlush(part: endpart)
+        } else {
+            writeAndClose(part: endpart)
+        }
     }
 
-    public func writeEndAndClose(trailers: HTTPHeaders? = nil) {
-        let endpart = HTTPServerResponsePart.end(trailers)
-        writeAndClose(part: endpart)
+    public func flush() {
+        ctx.channel.flush()
     }
 
     open func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {

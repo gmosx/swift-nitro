@@ -4,7 +4,7 @@ class HomeHandler: HTTPHandler {
     override func didReceiveHead(requestHead: HTTPRequestHead) {
         writeHead(status: .ok, contentType: "text/html; charset=utf-8")
         writeBody("Welcome home! <a href=\"/hello\">Hello</a>")
-        writeEndAndClose()
+        writeEnd()
     }
 }
 
@@ -12,7 +12,7 @@ class HelloHandler: HTTPHandler {
     override func didReceiveHead(requestHead: HTTPRequestHead) {
         writeHead(status: .ok)
         writeBody("Hello World! YEAH! <a href=\"/\">Home</a><img src=\"reizu-mark.svg\" />")
-        writeEndAndClose()
+        writeEnd()
     }
 }
 
