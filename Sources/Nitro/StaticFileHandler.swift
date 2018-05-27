@@ -2,7 +2,6 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-// TODO: consider renaming to StaticFileHandler?
 // TODO: support streaming / chunked
 // TODO: somewhere call `try! threadPool.syncShutdownGracefully()`
 
@@ -25,17 +24,11 @@ public class StaticFileHandler: HTTPHandler {
     }
 
     public override func didReceiveHead(requestHead: HTTPRequestHead) {
-        //            self.keepAlive = request.isKeepAlive
-        //            self.state.requestReceived()
-
-        //            guard !requestHead.uri.containsDotDot() else {
-        //                let response = httpResponseHead(request: request, status: .forbidden)
-        //                ctx.write(self.wrapOutboundOut(.head(response)), promise: nil)
-        //                self.completeResponse(ctx, trailers: nil, promise: nil)
-        //                return
-        //            }
-
-        // TODO: test for ".."
+        guard requestHead.uri.range(of: "..") == nil else {
+            self.writeHead(status: .forbidden)
+            self.writeEndAndClose()
+            return
+        }
 
         let path = "\(rootPath)\(requestHead.uri)"
 
@@ -76,7 +69,6 @@ public class StaticFileHandler: HTTPHandler {
             self.writeHead(status: .ok, headers: responseHeaders)
             self.writeBody(region)
             self.writeEndAndClose()
-            // self.completeResponse(ctx, trailers: nil, promise: p)
         }
     }
 }
