@@ -99,6 +99,13 @@ open class HTTPHandler: ChannelInboundHandler {
         ctx.channel.flush()
     }
 
+    public func redirect(to location: String, status: HTTPResponseStatus = .temporaryRedirect) {
+        var responseHeaders = HTTPHeaders()
+        responseHeaders.add(name: "Location", value: location)
+        self.writeHead(status: status, headers: responseHeaders)
+        self.writeEnd()
+    }
+
     open func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         self.ctx = ctx
 
