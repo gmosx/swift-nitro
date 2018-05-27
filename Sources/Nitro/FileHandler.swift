@@ -2,7 +2,10 @@ import Foundation
 import NIO
 import NIOHTTP1
 
-//// TODO: somewhere call `try! threadPool.syncShutdownGracefully()`
+// TODO: consider renaming to StaticFileHandler?
+// TODO: support streaming / chunked
+// TODO: somewhere call `try! threadPool.syncShutdownGracefully()`
+
 //var fileIO: NonBlockingFileIO {
 //    get {
 //        let threadPool = BlockingIOThreadPool(numberOfThreads: 6)

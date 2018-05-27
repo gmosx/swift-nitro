@@ -25,8 +25,8 @@ let rootPath = "/\(#file.split(separator: "/").dropLast().joined(separator: "/")
 let fileHandler = FileHandler(rootPath: rootPath, fileIO: fileIO)
 
 let router = Router(defaultHandler: fileHandler)
-router.route(path: "/", to: HomeHandler())
-router.route(path: "/hello", to: HelloHandler())
+router.addRule(pattern: "/", handler: HomeHandler())
+router.addRule(pattern: "/hello", handler: HelloHandler())
 
 let server = HTTPServer(handler: router)
 server.bind(host: "localhost", port: 1337)

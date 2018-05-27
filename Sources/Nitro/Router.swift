@@ -8,24 +8,29 @@ public final class Router: HTTPHandler {
         self.handlers = [:]
         self.defaultHandler = defaultHandler
     }
-    public func route(path: String, to handler: HTTPHandler) {
-        handlers[path] = handler
+
+    public func addRule(pattern: String, handler: HTTPHandler) {
+        handlers[pattern] = handler
+    }
+
+    public func route(uri: String) -> HTTPHandler {
+        // TODO: implement proper (and efficient) routing
+        for (pattern, handler) in handlers {
+            //                if header.uri.hasPrefix(path) {
+            if uri == pattern {
+                return handler
+            }
+        }
+
+        return defaultHandler
     }
 
     public override func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let requestPart = unwrapInboundIn(data)
 
         switch requestPart {
-        case .head(let header):
-            // TODO: implement proper (and efficient) routing
-            for (path, handler) in handlers {
-//                if header.uri.hasPrefix(path) {
-                if header.uri == path {
-                    handler.channelRead(ctx: ctx, data: data)
-                    return
-                }
-            }
-            defaultHandler.channelRead(ctx: ctx, data: data)
+        case .head(let requestHead):
+            route(uri: requestHead.uri).channelRead(ctx: ctx, data: data)
 
         case .body, .end:
             break
