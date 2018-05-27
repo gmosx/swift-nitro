@@ -35,8 +35,6 @@ public class FileHandler: HTTPHandler {
         // TODO: test for ".."
 
         let path = "\(rootPath)\(requestHead.uri)"
-        print(path)
-        print(FileManager.default.currentDirectoryPath)
 
         let fileHandleAndRegion = fileIO.openFile(path: path, eventLoop: ctx.eventLoop)
         fileHandleAndRegion.whenFailure {

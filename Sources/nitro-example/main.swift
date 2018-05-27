@@ -16,6 +16,7 @@ class HelloHandler: HTTPHandler {
     }
 }
 
+// TODO: hide the threadPool / fileIO creation in the framework.
 let threadPool = BlockingIOThreadPool(numberOfThreads: 6)
 threadPool.start()
 let fileIO = NonBlockingFileIO(threadPool: threadPool)
