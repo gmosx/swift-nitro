@@ -22,17 +22,27 @@ open class HTTPHandler: ChannelInboundHandler {
     open func didReceiveEnd(requestTrailers: HTTPHeaders?) {
     }
 
-    public func write(part: HTTPServerResponsePart) {
-        _ = ctx.channel.write(part)
+    @discardableResult
+    public func write(part: HTTPServerResponsePart) -> EventLoopFuture<Void> {
+        return ctx.channel.write(wrapOutboundOut(part))
+    }
+
+    @discardableResult
+    public func writeAndFlush(part: HTTPServerResponsePart) -> EventLoopFuture<Void> {
+        return ctx.channel.writeAndFlush(wrapOutboundOut(part))
+    }
+
+    public func writeAndFlush(part: HTTPServerResponsePart, promise: EventLoopPromise<Void>? = nil) {
+        return ctx.channel.writeAndFlush(wrapOutboundOut(part), promise: promise)
     }
 
     public func writeAndClose(part: HTTPServerResponsePart) {
-        _ = ctx.channel.writeAndFlush(part).then {
+        _ = ctx.channel.writeAndFlush(wrapOutboundOut(part)).then {
             self.ctx.channel.close()
         }
     }
 
-    public func writeHead(version: HTTPVersion? = nil, status: HTTPResponseStatus = .ok, contentType: String = "text/html", headers: HTTPHeaders? = nil) {
+    public func writeHead(version: HTTPVersion? = nil, status: HTTPResponseStatus = .ok, contentType: String = "text/html; charset=utf-8", headers: HTTPHeaders? = nil) {
         let head: HTTPResponseHead
 
         if var headers = headers {
@@ -55,13 +65,24 @@ open class HTTPHandler: ChannelInboundHandler {
             )
         }
 
-        write(part: HTTPServerResponsePart.head(head))
+        write(part: .head(head))
     }
 
-    public func writeBody(_ text: String) {
+    @discardableResult
+    public func writeBody(_ text: String) -> EventLoopFuture<Void> {
         var buffer = ctx.channel.allocator.buffer(capacity: text.utf8.count)
         buffer.write(string: text)
-        write(part: HTTPServerResponsePart.body(.byteBuffer(buffer)))
+        return write(part: .body(.byteBuffer(buffer)))
+    }
+
+    @discardableResult
+    public func writeBody(_ buffer: ByteBuffer) -> EventLoopFuture<Void> {
+        return write(part: .body(.byteBuffer(buffer)))
+    }
+
+    @discardableResult
+    public func writeBody(_ region: FileRegion) -> EventLoopFuture<Void> {
+        return write(part: .body(.fileRegion(region)))
     }
 
     public func flush() {

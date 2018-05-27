@@ -13,6 +13,10 @@ public final class Router: HTTPHandler {
         handlers[pattern] = handler
     }
 
+    public func addRule(defaultHandler: HTTPHandler) {
+        self.defaultHandler = defaultHandler
+    }
+
     public func route(uri: String) -> HTTPHandler {
         // TODO: implement proper (and efficient) routing
         for (pattern, handler) in handlers {

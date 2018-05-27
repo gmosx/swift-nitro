@@ -2,7 +2,7 @@ import Nitro
 
 class HomeHandler: HTTPHandler {
     override func didReceiveHead(requestHead: HTTPRequestHead) {
-        writeHead(status: .ok, contentType: "text/html")
+        writeHead(status: .ok, contentType: "text/html; charset=utf-8")
         writeBody("Welcome home! <a href=\"/hello\">Hello</a>")
         writeEndAndClose()
     }
@@ -10,7 +10,7 @@ class HomeHandler: HTTPHandler {
 
 class HelloHandler: HTTPHandler {
     override func didReceiveHead(requestHead: HTTPRequestHead) {
-        writeHead(status: .ok, contentType: "text/html")
+        writeHead(status: .ok)
         writeBody("Hello World! YEAH! <a href=\"/\">Home</a><img src=\"reizu-mark.svg\" />")
         writeEndAndClose()
     }
@@ -22,9 +22,9 @@ threadPool.start()
 let fileIO = NonBlockingFileIO(threadPool: threadPool)
 
 let rootPath = "/\(#file.split(separator: "/").dropLast().joined(separator: "/"))/public"
-let fileHandler = FileHandler(rootPath: rootPath, fileIO: fileIO)
+let staticFileHandler = StaticFileHandler(rootPath: rootPath, fileIO: fileIO)
 
-let router = Router(defaultHandler: fileHandler)
+let router = Router(defaultHandler: staticFileHandler)
 router.addRule(pattern: "/", handler: HomeHandler())
 router.addRule(pattern: "/hello", handler: HelloHandler())
 
