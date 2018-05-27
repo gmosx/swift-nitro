@@ -28,7 +28,7 @@ open class HTTPServer {
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(reuseAddrOption, value: 1)
             .childChannelInitializer { channel in
-                channel.pipeline.configureHTTPServerPipeline(withErrorHandling: true).then {
+                return channel.pipeline.configureHTTPServerPipeline(withErrorHandling: true).then {
                     return channel.pipeline.add(handler: self.handler)
                 }
             }

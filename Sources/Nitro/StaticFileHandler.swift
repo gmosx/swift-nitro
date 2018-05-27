@@ -41,9 +41,27 @@ public class StaticFileHandler: HTTPHandler {
 
         let fileHandleAndRegion = fileIO.openFile(path: path, eventLoop: ctx.eventLoop)
 
-        fileHandleAndRegion.whenFailure {
-            print($0)
-//            sendErrorResponse(request: request, $0)
+        fileHandleAndRegion.whenFailure { error in
+            var body = self.ctx.channel.allocator.buffer(capacity: 128)
+
+            switch error {
+            case let e as IOError where e.errnoCode == ENOENT:
+                body.write(staticString: "IOError (not found)\r\n")
+                self.writeHead(status: .notFound)
+
+            case let e as IOError:
+                body.write(staticString: "IOError (other)\r\n")
+                body.write(string: e.description)
+                body.write(staticString: "\r\n")
+                self.writeHead(status: .notFound)
+
+            default:
+                body.write(string: "\(type(of: error)) error\r\n")
+                self.writeHead(status: .internalServerError)
+            }
+
+            self.writeBody(body)
+            self.writeEndAndClose()
         }
 
         fileHandleAndRegion.whenSuccess { (file, region) in
