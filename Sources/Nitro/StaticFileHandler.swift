@@ -4,6 +4,7 @@ import NIOHTTP1
 
 // TODO: support streaming / chunked
 
+/// Serves static files at the given path
 public class StaticFileHandler: HTTPHandler {
     public let rootPath: String
 
