@@ -22,7 +22,7 @@ let staticFileHandler = StaticFileHandler(rootPath: staticFileRootPath)
 let router = Router()
 router.addRule(pattern: "/") { HomeHandler() }
 router.addRule(pattern: "/hello") { HelloHandler() }
-router.addRule(defaultHandler: { staticFileHandler })
+router.addFallbackRule { staticFileHandler }
 
 let server = HTTPServer(handler: router)
 server.bind(host: "localhost", port: 1337)

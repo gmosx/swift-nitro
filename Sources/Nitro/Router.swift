@@ -9,19 +9,18 @@ public typealias HandlerProvider = () -> HTTPHandler
 /// This is a state-less, thread-safe handler that can be reused across channels
 public final class Router: HTTPHandler {
     public var rules: [String: HandlerProvider]
-    public var defaultHandlerProvider: HandlerProvider!
+    public var fallbackHandlerProvider: HandlerProvider!
 
-    public init(defaultHandler: HandlerProvider? = nil) {
+    public override init() {
         self.rules = [:]
-        self.defaultHandlerProvider = defaultHandler
     }
 
-    public func addRule(pattern: String, handler: @escaping HandlerProvider) {
-        rules[pattern] = handler
+    public func addRule(pattern: String, handlerProvider: @escaping HandlerProvider) {
+        rules[pattern] = handlerProvider
     }
 
-    public func addRule(defaultHandler: @escaping HandlerProvider) {
-        self.defaultHandlerProvider = defaultHandler
+    public func addFallbackRule(handlerProvider: @escaping HandlerProvider) {
+        self.fallbackHandlerProvider = handlerProvider
     }
 
     public func route(uri: String) -> HTTPHandler {
@@ -33,7 +32,7 @@ public final class Router: HTTPHandler {
             }
         }
 
-        return defaultHandlerProvider()
+        return fallbackHandlerProvider()
     }
 
     public override func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
