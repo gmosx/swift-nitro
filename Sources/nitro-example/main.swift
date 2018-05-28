@@ -21,14 +21,14 @@ class HomeHandler: HTTPHandler {
 class HelloHandler: HTTPHandler {
     override func didReceiveHead(requestHead: HTTPRequestHead) {
         var responseHeaders = HTTPHeaders()
-        responseHeaders.addCookie(name: "cookie1", value: "It works")
+        responseHeaders.addCookie(name: "cookie1", value: "It works", httpOnly: true)
         responseHeaders.addCookie(name: "cookie2", value: "2013")
         responseHeaders.removeCookie(named: "gmcookie")
 
         writeHead(status: .ok, headers: responseHeaders)
 
         writeBody("Hello World! YEAH! <a href=\"/\">Home</a><img src=\"reizu-mark.svg\" />")
-        
+
         writeEnd()
     }
 }

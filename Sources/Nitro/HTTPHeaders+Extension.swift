@@ -15,13 +15,33 @@ extension HTTPHeaders {
         return nil
     }
 
-    public mutating func addCookie(name: String, value: String, httpOnly: Bool = true, secure: Bool? = nil, maxAge: Int? = nil) {
-        // TODO: handle extra options
-        add(name: "Set-Cookie", value: "\(name)=\(value)")
+    public mutating func addCookie(name: String, value: String, domain: String? = nil, path: String? = nil, httpOnly: Bool? = nil, secure: Bool? = nil, maxAge: Int? = nil) {
+        var builder: [String] = ["\(name)=\(value)"]
+
+        if let domain = domain {
+            builder.append("Domain=\(domain)")
+        }
+
+        if let path = path {
+            builder.append("Path=\(path)")
+        }
+
+        if let httpOnly = httpOnly {
+            builder.append("HttpOnly=\(httpOnly)")
+        }
+
+        if let secure = secure {
+            builder.append("Secure=\(secure)")
+        }
+
+        if let maxAge = maxAge {
+            builder.append("Max-Age=\(maxAge)")
+        }
+
+        add(name: "Set-Cookie", value: builder.joined(separator: "; "))
     }
 
-    public mutating func removeCookie(named name: String) {
-        // TODO: handle path, domain
-        replaceOrAdd(name: "Set-Cookie", value: "\(name)=; Max-Age=0")
+    public mutating func removeCookie(named name: String, domain: String? = nil, path: String? = nil) {
+        addCookie(name: name, value: "", domain: domain, path: path, maxAge: 0)
     }
 }
