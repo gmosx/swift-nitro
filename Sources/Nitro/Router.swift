@@ -1,16 +1,21 @@
 import NIO
 
-public final class Router: HTTPHandler {
-    public var handlers: [String: HTTPHandler]
-    public var defaultHandler: HTTPHandler
+// TODO: add a default error handler if no default is provided
 
-    public init(defaultHandler: HTTPHandler) {
-        self.handlers = [:]
+/// Routes inbound requeats to handlers
+///
+/// This is a state-less, thread-safe handler that can be reused across channels
+public final class Router: HTTPHandler {
+    public var rules: [String: HTTPHandler]
+    public var defaultHandler: HTTPHandler!
+
+    public init(defaultHandler: HTTPHandler? = nil) {
+        self.rules = [:]
         self.defaultHandler = defaultHandler
     }
 
     public func addRule(pattern: String, handler: HTTPHandler) {
-        handlers[pattern] = handler
+        rules[pattern] = handler
     }
 
     public func addRule(defaultHandler: HTTPHandler) {
@@ -19,7 +24,7 @@ public final class Router: HTTPHandler {
 
     public func route(uri: String) -> HTTPHandler {
         // TODO: implement proper (and efficient) routing
-        for (pattern, handler) in handlers {
+        for (pattern, handler) in rules {
             //                if header.uri.hasPrefix(path) {
             if uri == pattern {
                 return handler

@@ -16,12 +16,12 @@ class HelloHandler: HTTPHandler {
     }
 }
 
-let rootPath = "/\(#file.split(separator: "/").dropLast().joined(separator: "/"))/public"
-let staticFileHandler = StaticFileHandler(rootPath: rootPath)
+let staticFilesRootPath = "/\(#file.split(separator: "/").dropLast().joined(separator: "/"))/public"
 
-let router = Router(defaultHandler: staticFileHandler)
+let router = Router()
 router.addRule(pattern: "/", handler: HomeHandler())
 router.addRule(pattern: "/hello", handler: HelloHandler())
+router.addRule(defaultHandler: StaticFileHandler(rootPath: staticFilesRootPath))
 
 let server = HTTPServer(handler: router)
 server.bind(host: "localhost", port: 1337)
