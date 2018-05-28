@@ -1,8 +1,6 @@
 import NIO
 import NIOHTTP1
 
-// TODO: correctly handle keepalive
-
 open class HTTPHandler: ChannelInboundHandler {
     public typealias InboundIn = HTTPServerRequestPart
     public typealias OutboundOut = HTTPServerResponsePart
@@ -43,11 +41,15 @@ open class HTTPHandler: ChannelInboundHandler {
     }
 
     public func writeHead(version: HTTPVersion? = nil, status: HTTPResponseStatus = .ok, contentType: String = "text/html; charset=utf-8", headers: HTTPHeaders? = nil) {
+        // TODO: set Connection: close if not isKeepAlive!
         let head: HTTPResponseHead
 
         if var headers = headers {
             if !headers.contains(name: "Content-Type") {
                 headers.add(name: "Content-Type", value: contentType)
+            }
+            if !requestHead.isKeepAlive && (!headers.contains(name: "Content-Type")) {
+                headers.add(name: "Connection", value: "close")
             }
 
             head = HTTPResponseHead(
@@ -58,6 +60,9 @@ open class HTTPHandler: ChannelInboundHandler {
         } else {
             var headers = HTTPHeaders()
             headers.add(name: "Content-Type", value: contentType)
+            if !requestHead.isKeepAlive {
+                headers.add(name: "Connection", value: "close")
+            }
             head = HTTPResponseHead(
                 version: version ?? requestHead.version,
                 status: status,
