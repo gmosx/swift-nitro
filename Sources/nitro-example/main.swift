@@ -16,13 +16,8 @@ class HelloHandler: HTTPHandler {
     }
 }
 
-// TODO: hide the threadPool / fileIO creation in the framework.
-let threadPool = BlockingIOThreadPool(numberOfThreads: 6)
-threadPool.start()
-let fileIO = NonBlockingFileIO(threadPool: threadPool)
-
 let rootPath = "/\(#file.split(separator: "/").dropLast().joined(separator: "/"))/public"
-let staticFileHandler = StaticFileHandler(rootPath: rootPath, fileIO: fileIO)
+let staticFileHandler = StaticFileHandler(rootPath: rootPath)
 
 let router = Router(defaultHandler: staticFileHandler)
 router.addRule(pattern: "/", handler: HomeHandler())

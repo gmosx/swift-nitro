@@ -2,6 +2,8 @@ import Foundation
 import NIO
 import NIOHTTP1
 
+var fileIO: NonBlockingFileIO! // TODO: ultra-hack, where should we initialize this?
+
 open class HTTPServer {
     let handler: HTTPHandler
 
@@ -12,14 +14,14 @@ open class HTTPServer {
     open func bind(host: String, port: Int) {
         let loopGroup = MultiThreadedEventLoopGroup(numThreads: System.coreCount)
 
-//        let threadPool = BlockingIOThreadPool(numberOfThreads: 6)
-//        threadPool.start()
-//
-//        let fileIO = NonBlockingFileIO(threadPool: threadPool)
+        let threadPool = BlockingIOThreadPool(numberOfThreads: 6)
+        threadPool.start()
+
+        fileIO = NonBlockingFileIO(threadPool: threadPool)
 
         defer {
             try! loopGroup.syncShutdownGracefully()
-//            try! threadPool.syncShutdownGracefully()
+            try! threadPool.syncShutdownGracefully()
         }
 
         let reuseAddrOption = ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR)

@@ -41,7 +41,6 @@ open class HTTPHandler: ChannelInboundHandler {
     }
 
     public func writeHead(version: HTTPVersion? = nil, status: HTTPResponseStatus = .ok, contentType: String = "text/html; charset=utf-8", headers: HTTPHeaders? = nil) {
-        // TODO: set Connection: close if not isKeepAlive!
         let head: HTTPResponseHead
 
         if var headers = headers {

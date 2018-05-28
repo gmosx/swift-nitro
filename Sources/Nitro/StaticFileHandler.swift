@@ -3,24 +3,12 @@ import NIO
 import NIOHTTP1
 
 // TODO: support streaming / chunked
-// TODO: somewhere call `try! threadPool.syncShutdownGracefully()`
-
-//var fileIO: NonBlockingFileIO {
-//    get {
-//        let threadPool = BlockingIOThreadPool(numberOfThreads: 6)
-//        threadPool.start()
-//
-//        return NonBlockingFileIO(threadPool: threadPool)
-//    }
-//}
 
 public class StaticFileHandler: HTTPHandler {
     public let rootPath: String
-    public let fileIO: NonBlockingFileIO
 
-    public init(rootPath: String = "public", fileIO: NonBlockingFileIO) {
+    public init(rootPath: String = "public") {
         self.rootPath = rootPath
-        self.fileIO = fileIO
     }
 
     public override func didReceiveHead(requestHead: HTTPRequestHead) {
@@ -32,6 +20,7 @@ public class StaticFileHandler: HTTPHandler {
 
         let path = "\(rootPath)\(requestHead.uri)"
 
+        // TODO: ultra-hack, we use the fileIO initialized in HTTPServer!
         let fileHandleAndRegion = fileIO.openFile(path: path, eventLoop: ctx.eventLoop)
 
         fileHandleAndRegion.whenFailure { error in
