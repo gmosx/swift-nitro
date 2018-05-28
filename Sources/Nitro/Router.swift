@@ -19,7 +19,7 @@ public final class Router: HTTPHandler {
         rules[pattern] = handlerProvider
     }
 
-    public func addFallbackRule(handlerProvider: @escaping HandlerProvider) {
+    public func fallback(handlerProvider: @escaping HandlerProvider) {
         self.fallbackHandlerProvider = handlerProvider
     }
 
