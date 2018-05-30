@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Logging",
+        "repositoryURL": "https://github.com/reizu/swift-logging.git",
+        "state": {
+          "branch": "master",
+          "revision": "21db3cf72792f67c57357e56ae76e6a4f78f4165",
+          "version": null
+        }
+      },
+      {
         "package": "swift-nio",
         "repositoryURL": "https://github.com/apple/swift-nio.git",
         "state": {

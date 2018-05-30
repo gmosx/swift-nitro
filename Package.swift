@@ -5,7 +5,8 @@ import PackageDescription
 let package = Package(
     name: "Nitro",
     dependencies: [
-        .package(url: "https://github.com/apple/swift-nio.git", from: "1.0.0")
+        .package(url: "https://github.com/apple/swift-nio.git", from: "1.0.0"),
+        .package(url: "https://github.com/reizu/swift-logging.git", .branch("master")),
     ],
     targets: [
         .target(
@@ -13,12 +14,13 @@ let package = Package(
             dependencies: [
                 "NIO",
                 "NIOHTTP1",
+                "Logging",
             ]
         ),
         .target(
             name: "nitro-example",
             dependencies: [
-                .target(name: "Nitro")
+                .target(name: "Nitro"),
             ]
         ),
     ]

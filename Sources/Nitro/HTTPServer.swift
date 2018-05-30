@@ -1,6 +1,7 @@
 import Foundation
 import NIO
 import NIOHTTP1
+import Logging
 
 var fileIO: NonBlockingFileIO! // TODO: ultra-hack, where should we initialize this?
 
@@ -40,7 +41,7 @@ open class HTTPServer {
 
         do {
             let serverChannel = try bootstrap.bind(host: host, port: port).wait()
-            print("Server running on:", serverChannel.localAddress!)
+            Logger.info("Server running on: \(serverChannel.localAddress!)")
             try serverChannel.closeFuture.wait() // runs forever
         } catch {
             fatalError("Failed to start server: \(error)")
