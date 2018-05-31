@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/reizu/swift-logging.git",
         "state": {
           "branch": "master",
-          "revision": "21db3cf72792f67c57357e56ae76e6a4f78f4165",
+          "revision": "4758a30120883d451bb089be9f30b085cd57b5f9",
           "version": null
         }
       },
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/apple/swift-nio.git",
         "state": {
           "branch": null,
-          "revision": "77dc77b9b5cdddfb3c385c5ee6cb74153d284967",
-          "version": "1.7.2"
+          "revision": "695afc5205aaa49fca092b94b479ff71c43d9d3c",
+          "version": "1.8.0"
         }
       },
       {

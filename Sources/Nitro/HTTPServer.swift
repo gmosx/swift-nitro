@@ -13,7 +13,7 @@ open class HTTPServer {
     }
 
     open func bind(host: String, port: Int) {
-        let loopGroup = MultiThreadedEventLoopGroup(numThreads: System.coreCount)
+        let loopGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
 
         let threadPool = BlockingIOThreadPool(numberOfThreads: 6)
         threadPool.start()
