@@ -6,11 +6,10 @@ import Logging
 public typealias HandlerProvider = () -> HTTPHandler
 
 /// Routes inbound requeats to handlers
-///
-/// This is a state-less, thread-safe handler that can be reused across channels
 public final class Router: HTTPHandler {
     public var rules: [String: HandlerProvider]
-    public var fallbackHandlerProvider: HandlerProvider!
+    public var fallbackHandlerProvider: HandlerProvider?
+    private var handler: HTTPHandler?
 
     public override init() {
         self.rules = [:]
@@ -24,9 +23,9 @@ public final class Router: HTTPHandler {
         self.fallbackHandlerProvider = handlerProvider
     }
 
-    public func route(uri: String) -> HTTPHandler {
+    public func route(uri: String) -> HTTPHandler? {
         Logger.debug("Routing \(uri)")
-        
+
         // TODO: implement proper (and efficient) routing
         for (pattern, handlerProvider) in rules {
             //                if header.uri.hasPrefix(path) {
@@ -35,7 +34,7 @@ public final class Router: HTTPHandler {
             }
         }
 
-        return fallbackHandlerProvider()
+        return fallbackHandlerProvider?()
     }
 
     public override func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
@@ -43,10 +42,16 @@ public final class Router: HTTPHandler {
 
         switch requestPart {
         case .head(let requestHead):
-            route(uri: requestHead.uri).channelRead(ctx: ctx, data: data)
+            handler = route(uri: requestHead.uri)
 
         case .body, .end:
             break
+        }
+
+        if let handler = handler {
+            handler.channelRead(ctx: ctx, data: data)
+        } else {
+            Logger.info("No handler found for \(requestHead.uri)")
         }
     }
 }
