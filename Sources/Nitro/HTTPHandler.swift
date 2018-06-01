@@ -4,7 +4,7 @@ import NIOHTTP1
 open class HTTPHandler: ChannelInboundHandler {
     public typealias InboundIn = HTTPServerRequestPart
     public typealias OutboundOut = HTTPServerResponsePart
-    
+
     public var ctx: ChannelHandlerContext!
     public var requestHead: HTTPRequestHead!
 
