@@ -1,7 +1,7 @@
 import Nitro
 
 class HomeHandler: HTTPHandler {
-    override func didReceiveHead(requestHead: HTTPRequestHead) {
+    override func requestHeadReceived(requestHead: HTTPRequestHead) {
         let cookie1 = requestHead.headers.cookie(named: "cookie1")
         let cookie2 = requestHead.headers.cookie(named: "cookie2")
 
@@ -19,7 +19,7 @@ class HomeHandler: HTTPHandler {
 }
 
 class HelloHandler: HTTPHandler {
-    override func didReceiveHead(requestHead: HTTPRequestHead) {
+    override func requestHeadReceived(requestHead: HTTPRequestHead) {
         var responseHeaders = HTTPHeaders()
         responseHeaders.addCookie(name: "cookie1", value: "It works", httpOnly: true)
         responseHeaders.addCookie(name: "cookie2", value: "2013")

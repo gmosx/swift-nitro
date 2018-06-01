@@ -1,4 +1,5 @@
 import NIO
+import Logging
 
 // TODO: add a default error handler if no default is provided
 
@@ -24,6 +25,8 @@ public final class Router: HTTPHandler {
     }
 
     public func route(uri: String) -> HTTPHandler {
+        Logger.debug("Routing \(uri)")
+        
         // TODO: implement proper (and efficient) routing
         for (pattern, handlerProvider) in rules {
             //                if header.uri.hasPrefix(path) {

@@ -11,13 +11,13 @@ open class HTTPHandler: ChannelInboundHandler {
     public init() {
     }
 
-    open func didReceiveHead(requestHead: HTTPRequestHead) {
+    open func requestHeadReceived(requestHead: HTTPRequestHead) { // consider: headRead, requestHeadRead
     }
 
-    open func didReceiveBody(requestBody: ByteBuffer) {
+    open func requestBodyReceived(requestBody: ByteBuffer) { // consider: bodyRead, requestBodyRead
     }
 
-    open func didReceiveEnd(requestTrailers: HTTPHeaders?) {
+    open func requestEndReceived(requestTrailers: HTTPHeaders?) { // consider: endRead, requestEndRead
     }
 
     @discardableResult
@@ -103,7 +103,7 @@ open class HTTPHandler: ChannelInboundHandler {
         ctx.channel.flush()
     }
 
-    public func redirect(to location: String, status: HTTPResponseStatus = .temporaryRedirect) {
+    public func redirect(to location: String, status: HTTPResponseStatus = .seeOther) {
         var responseHeaders = HTTPHeaders()
         responseHeaders.add(name: "Location", value: location)
         self.writeHead(status: status, headers: responseHeaders)
@@ -118,13 +118,13 @@ open class HTTPHandler: ChannelInboundHandler {
         switch requestPart {
         case .head(let requestHead):
             self.requestHead = requestHead
-            didReceiveHead(requestHead: requestHead)
+            requestHeadReceived(requestHead: requestHead)
 
         case .body(let requestBody):
-            didReceiveBody(requestBody: requestBody)
+            requestBodyReceived(requestBody: requestBody)
 
         case .end(let requestTrailers):
-            didReceiveEnd(requestTrailers: requestTrailers)
+            requestEndReceived(requestTrailers: requestTrailers)
         }
     }
 }

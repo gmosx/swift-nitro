@@ -12,7 +12,7 @@ public class StaticFileHandler: HTTPHandler {
         self.rootPath = rootPath
     }
 
-    public override func didReceiveHead(requestHead: HTTPRequestHead) {
+    public override func requestHeadReceived(requestHead: HTTPRequestHead) {
         guard requestHead.uri.range(of: "..") == nil else {
             self.writeHead(status: .forbidden)
             self.writeEnd()

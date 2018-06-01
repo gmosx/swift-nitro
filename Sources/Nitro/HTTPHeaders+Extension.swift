@@ -1,6 +1,12 @@
 import NIO
 
 extension HTTPHeaders {
+    public mutating func addRedirect(to location: String, status: HTTPResponseStatus = .temporaryRedirect) {
+        add(name: "Location", value: location)
+    }
+}
+
+extension HTTPHeaders {
     public func cookie(named name: String) -> String? {
         // TODO: more effient implementation is needed!
         if contains(name: "Cookie") {
