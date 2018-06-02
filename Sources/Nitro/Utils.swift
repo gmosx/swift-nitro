@@ -1,4 +1,3 @@
-
 public func decodeURLEncoded(string: String) -> [String: [String]] {
     var values: [String: [String]] = [:]
 
