@@ -1,8 +1,8 @@
 
-public func decodeFormURLEncoded(queryString: String) -> [String: [String]] {
+public func decodeURLEncoded(string: String) -> [String: [String]] {
     var values: [String: [String]] = [:]
 
-    for pair in queryString.split(separator: "&") {
+    for pair in string.split(separator: "&") {
         let splitPair = pair.split(separator: "=", maxSplits: 1,
                                    omittingEmptySubsequences: false)
             .map { $0.replacingOccurrences(of: "+", with: " ") }
