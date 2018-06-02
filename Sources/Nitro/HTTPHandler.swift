@@ -11,13 +11,13 @@ open class HTTPHandler: ChannelInboundHandler {
     public init() {
     }
 
-    open func requestHeadReceived(requestHead: HTTPRequestHead) { // consider: headRead, requestHeadRead
+    open func headRead(requestHead: HTTPRequestHead) { // consider: headRead, requestHeadRead
     }
 
-    open func requestBodyReceived(requestBody: ByteBuffer) { // consider: bodyRead, requestBodyRead
+    open func bodyRead(requestBody: ByteBuffer) { // consider: bodyRead, requestBodyRead
     }
 
-    open func requestEndReceived(requestTrailers: HTTPHeaders?) { // consider: endRead, requestEndRead
+    open func endRead(requestTrailers: HTTPHeaders?) { // consider: endRead, requestEndRead
     }
 
     @discardableResult
@@ -118,13 +118,13 @@ open class HTTPHandler: ChannelInboundHandler {
         switch requestPart {
         case .head(let requestHead):
             self.requestHead = requestHead
-            requestHeadReceived(requestHead: requestHead)
+            headRead(requestHead: requestHead)
 
         case .body(let requestBody):
-            requestBodyReceived(requestBody: requestBody)
+            bodyRead(requestBody: requestBody)
 
         case .end(let requestTrailers):
-            requestEndReceived(requestTrailers: requestTrailers)
+            endRead(requestTrailers: requestTrailers)
         }
     }
 }
