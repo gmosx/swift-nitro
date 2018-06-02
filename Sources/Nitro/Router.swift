@@ -25,9 +25,11 @@ public final class Router: HTTPHandler {
 
     public func route(uri: String) -> HTTPHandler? {
         // TODO: implement proper (and efficient) routing
+        let path = uri.split(separator: "?").first!
+
         for (pattern, handlerProvider) in rules {
             //                if header.uri.hasPrefix(path) {
-            if uri == pattern {
+            if path == pattern {
                 return handlerProvider()
             }
         }
