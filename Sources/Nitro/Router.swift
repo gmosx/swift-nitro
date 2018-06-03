@@ -24,12 +24,12 @@ public final class Router: HTTPHandler {
     }
 
     public func route(uri: String) -> HTTPHandler? {
-        Logger.debug("Routing \(uri)")
-
         // TODO: implement proper (and efficient) routing
+        let path = uri.split(separator: "?").first!
+
         for (pattern, handlerProvider) in rules {
             //                if header.uri.hasPrefix(path) {
-            if uri == pattern {
+            if path == pattern {
                 return handlerProvider()
             }
         }
@@ -42,6 +42,7 @@ public final class Router: HTTPHandler {
 
         switch requestPart {
         case .head(let requestHead):
+            Logger.debug("Routing \(requestHead.uri)")
             handler = route(uri: requestHead.uri)
 
         case .body, .end:
