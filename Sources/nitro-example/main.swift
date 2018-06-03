@@ -1,4 +1,5 @@
 import Nitro
+import Foundation
 
 class HomeHandler: HTTPHandler {
     override func headRead(requestHead: HTTPRequestHead) {
@@ -27,7 +28,28 @@ class HelloHandler: HTTPHandler {
 
         writeHead(status: .ok, headers: responseHeaders)
 
-        writeBody("Hello World! YEAH! <a href=\"/\">Home</a><img src=\"reizu-mark.svg\" />")
+        writeBody(
+            """
+            Hello World! YEAH! <a href="/">Home</a><img src="reizu-mark.svg" />
+            <br />
+            <br />
+            <a href="/streaming">Streaming</a>
+            """
+        )
+
+        writeEnd()
+    }
+}
+
+class StreamingHandler: HTTPHandler {
+    override func headRead(requestHead: HTTPRequestHead) {
+        writeHead(status: .ok)
+
+        for i in 0..<10 {
+            writeBody("Ping \(i)<br />")
+            flush()
+            sleep(1) // I know it's BAAAAAD, but that's just a demo!
+        }
 
         writeEnd()
     }
@@ -38,6 +60,7 @@ let staticFileRootPath = "/\(#file.split(separator: "/").dropLast().joined(separ
 let router = Router()
 router.addRule(pattern: "/") { HomeHandler() }
 router.addRule(pattern: "/hello") { HelloHandler() }
+router.addRule(pattern: "/streaming") { StreamingHandler() }
 router.fallback { StaticFileHandler(rootPath: staticFileRootPath) }
 
 let server = HTTPServer(handler: router)
