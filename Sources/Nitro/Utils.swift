@@ -1,3 +1,6 @@
+// TODO: move to more general package, e.g. HTTPKit
+
+// TODO: add an option/variant that returns single values
 public func decodeURLEncoded(string: String) -> [String: [String]] {
     var values: [String: [String]] = [:]
 

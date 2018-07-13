@@ -27,6 +27,15 @@
           "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
           "version": "1.0.0"
         }
+      },
+      {
+        "package": "RegExp",
+        "repositoryURL": "https://github.com/reizu/swift-regexp.git",
+        "state": {
+          "branch": "master",
+          "revision": "2227b0b574bf0a0a3da423fc4bb6c5f8999d2b68",
+          "version": null
+        }
       }
     ]
   },

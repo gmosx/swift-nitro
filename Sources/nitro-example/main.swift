@@ -1,5 +1,10 @@
-import Nitro
 import Foundation
+import Logging
+import Nitro
+
+// TODO: Add example with POST json
+// TODO: Add example with POST file
+// TODO: Add file-upload example
 
 class HomeHandler: HTTPHandler {
     override func headRead(requestHead: HTTPRequestHead) {
@@ -12,6 +17,22 @@ class HomeHandler: HTTPHandler {
             """
             Welcome home! <a href=\"/hello\">Hello</a><br />
             Here are your cookies: \(cookie1 ?? "-"), \(cookie2 ?? "-")
+            <br /><br /><br />
+            Go to <a href="/profiles/15">Profile</a>
+            <br /><br /><br />
+            <form method="post" action="/handle-form">
+                <p>
+                    <label>Username</label><br />
+                    <input type="text" name="username">
+                </p>
+                <p>
+                    <label>Password</label><br />
+                    <input type="password" name="password">
+                </p>
+                <p>
+                    <button type="submit">Send</button>
+                </p>
+            </form>
             """
         )
 
@@ -55,13 +76,52 @@ class StreamingHandler: HTTPHandler {
     }
 }
 
-let staticFileRootPath = "/\(#file.split(separator: "/").dropLast().joined(separator: "/"))/public"
+class ProfileHandler: HTTPHandler {
+    let id: String
+    
+    public init(id: String) {
+        self.id = id
+    }
+    
+    override func headRead(requestHead: HTTPRequestHead) {
+        writeHead(status: .ok)
+        
+        writeBody("Profile page \(id)")
+        
+        writeEnd()
+    }
+}
 
-let router = Router()
-router.addRule(pattern: "/") { HomeHandler() }
-router.addRule(pattern: "/hello") { HelloHandler() }
-router.addRule(pattern: "/streaming") { StreamingHandler() }
-router.fallback { StaticFileHandler(rootPath: staticFileRootPath) }
+class FormHandler: HTTPHandler {
+    override func bodyRead(requestBody: ByteBuffer) {
+        if requestHead.method == .POST {
+            var requestBody = requestBody
+            
+            if let payload = requestBody.readString(length: requestBody.readableBytes) {
+                let parameters = decodeURLEncoded(string: payload)
+                print(parameters)
+            }
+            
+            redirect(to: "/")
+        }
+    }
+}
 
-let server = HTTPServer(handler: router)
-server.bind(host: "localhost", port: 8000)
+func main() {
+    Logger.level = .debug
+
+    let staticFileRootPath = "/\(#file.split(separator: "/").dropLast().joined(separator: "/"))/public"
+
+    let router = Router()
+    router.addRule(pattern: "^/$") { _ in HomeHandler() }
+    router.addRule(pattern: "^/hello$") { _ in HelloHandler() }
+    router.addRule(pattern: "^/streaming$") { _ in  StreamingHandler() }
+    router.addRule(pattern: "^/profiles/(.*)$") { parameters in ProfileHandler(id: parameters[0]) }
+    router.addRule(pattern: "^/handle-form$") { _ in FormHandler() }
+    router.fallback { _ in StaticFileHandler(rootPath: staticFileRootPath) }
+
+    let server = HTTPServer(handler: router)
+    server.bind(host: "localhost", port: 8000)
+}
+
+main()

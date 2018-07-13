@@ -1,40 +1,44 @@
 import NIO
 import Logging
+import RegExp
 
+// TODO: Rename to URIRouter or URLRouter or something.
 // TODO: add a default error handler if no default is provided
 
-public typealias HandlerProvider = () -> HTTPHandler
+public typealias HandlerProvider = (_ parameters: [String]) -> HTTPHandler
 
 /// Routes inbound requeats to handlers
 public final class Router: HTTPHandler {
-    public var rules: [String: HandlerProvider]
+    public var rules: [(RegExp, HandlerProvider)]
     public var fallbackHandlerProvider: HandlerProvider?
     private var handler: HTTPHandler?
 
     public override init() {
-        self.rules = [:]
+        self.rules = []
     }
 
     public func addRule(pattern: String, handlerProvider: @escaping HandlerProvider) {
-        rules[pattern] = handlerProvider
+        rules.append((RegExp(pattern), handlerProvider))
     }
 
     public func fallback(handlerProvider: @escaping HandlerProvider) {
         self.fallbackHandlerProvider = handlerProvider
     }
 
+    // TODO: implement proper (and efficient) routing
     public func route(uri: String) -> HTTPHandler? {
-        // TODO: implement proper (and efficient) routing
-        let path = uri.split(separator: "?").first!
+        let path = String(uri.split(separator: "?").first!)
 
         for (pattern, handlerProvider) in rules {
-            //                if header.uri.hasPrefix(path) {
-            if path == pattern {
-                return handlerProvider()
+            if path =~ pattern {
+                if let match = pattern.matches(in: path).first {
+                    let parameters = match.ranges.dropFirst().map { String(path[$0]) }
+                    return handlerProvider(parameters)
+                }
             }
         }
 
-        return fallbackHandlerProvider?()
+        return fallbackHandlerProvider?([])
     }
 
     public override func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {

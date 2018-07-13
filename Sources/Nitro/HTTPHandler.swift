@@ -11,13 +11,13 @@ open class HTTPHandler: ChannelInboundHandler {
     public init() {
     }
 
-    open func headRead(requestHead: HTTPRequestHead) { // consider: headRead, requestHeadRead
+    open func headRead(requestHead: HTTPRequestHead) {
     }
 
-    open func bodyRead(requestBody: ByteBuffer) { // consider: bodyRead, requestBodyRead
+    open func bodyRead(requestBody: ByteBuffer) {
     }
 
-    open func endRead(requestTrailers: HTTPHeaders?) { // consider: endRead, requestEndRead
+    open func endRead(requestTrailers: HTTPHeaders?) {
     }
 
     @discardableResult
@@ -103,6 +103,7 @@ open class HTTPHandler: ChannelInboundHandler {
         ctx.channel.flush()
     }
 
+    // TODO: consider renaming to writeRedirect.
     public func redirect(to location: String, status: HTTPResponseStatus = .seeOther) {
         var responseHeaders = HTTPHeaders()
         responseHeaders.add(name: "Location", value: location)
